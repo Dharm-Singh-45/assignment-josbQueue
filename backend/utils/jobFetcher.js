@@ -100,20 +100,11 @@ const processAndStoreJobs = async (jsonData,feedUrl) => {
       failedJobs.push({ jobId: item.id || "unknown", reason: err.message });
     }
   }
-  // ✅ Save the import log
-  await ImportLog.create({
-    totalFetched: itemsArray.length,
-    totalImported: created + updated,
-    newJobs: created,
-    updatedJobs: updated,
-    failedJobs,
-  });
 
-  console.log(`📄 Import log saved to database`);
   console.log(
     `✅ Processed: ${processed}, Created: ${created}, Updated: ${updated}`
   );
-  return { processed, created, updated };
+  return { processed, created, updated ,failedJobs };
 };
 
 // ✅ Entry function
