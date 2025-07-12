@@ -15,12 +15,6 @@ const ImportLogsTable: React.FC = () => {
     hasNext: boolean;
     hasPrev: boolean;
   } | null>(null);
-  const [stats, setStats] = useState<{
-    totalImports: number;
-    totalJobsImported: number;
-    averageSuccessRate: number;
-    lastImportDate: string | null;
-  } | null>(null);
 
   useEffect(() => {
     fetchData(currentPage);
@@ -29,13 +23,9 @@ const ImportLogsTable: React.FC = () => {
   const fetchData = async (page: number = 1) => {
     try {
       setLoading(true);
-      const [paginatedData, statsData] = await Promise.all([
-        importLogsApi.getPaginated(page, 10),
-        importLogsApi.getStats()
-      ]);
+      const paginatedData = await importLogsApi.getPaginated(page, 10);
       setLogs(paginatedData.logs);
       setPagination(paginatedData.pagination);
-      setStats(statsData);
     } catch (err) {
       setError('Failed to fetch import logs data');
       console.error('Error fetching data:', err);
@@ -46,17 +36,6 @@ const ImportLogsTable: React.FC = () => {
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
-  };
-
-  const getStatusColor = (successRate: number) => {
-    if (successRate >= 90) return 'text-green-600';
-    if (successRate >= 70) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
-  const calculateSuccessRate = (totalImported: number, totalFetched: number) => {
-    if (totalFetched === 0) return 0;
-    return Math.round((totalImported / totalFetched) * 100);
   };
 
   if (loading) {
@@ -77,36 +56,13 @@ const ImportLogsTable: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header with Stats */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Job Import Dashboard</h1>
-        
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <div className="text-sm font-medium text-blue-600">Total Imports</div>
-              <div className="text-2xl font-bold text-blue-800">{stats.totalImports}</div>
-            </div>
-            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-              <div className="text-sm font-medium text-yellow-600">Avg Success Rate</div>
-              <div className="text-2xl font-bold text-yellow-800">{stats.averageSuccessRate.toFixed(1)}%</div>
-            </div>
-            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-              <div className="text-sm font-medium text-purple-600">Last Import</div>
-              <div className="text-sm font-bold text-purple-800">
-                {stats.lastImportDate ? formatDate(stats.lastImportDate) : 'Never'}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Job Import Logs</h1>
 
-      {/* Table */}
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-800">Import History</h2>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -126,15 +82,12 @@ const ImportLogsTable: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Failed Jobs
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Success Rate
-                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {logs.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
                     No import logs found
                   </td>
                 </tr>
@@ -144,29 +97,10 @@ const ImportLogsTable: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatDate(log.timestamp)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="font-medium">{log.totalFetched}</span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        {log.newJobs}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {log.updatedJobs}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                        {log.failedJobs.length}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`font-medium ${getStatusColor(calculateSuccessRate(log.totalImported, log.totalFetched))}`}>
-                        {calculateSuccessRate(log.totalImported, log.totalFetched)}%
-                      </span>
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{log.totalFetched}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-green-800 font-medium">{log.newJobs}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-800 font-medium">{log.updatedJobs}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-red-800 font-medium">{log.failedJobs.length}</td>
                   </tr>
                 ))
               )}
@@ -175,52 +109,27 @@ const ImportLogsTable: React.FC = () => {
         </div>
       </div>
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       {pagination && (
         <div className="mt-6 flex items-center justify-between">
           <div className="text-sm text-gray-700">
             Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
           </div>
-          
-          <div className="flex items-center space-x-2">
+          <div className="flex space-x-2">
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={!pagination.hasPrev}
-              className={`px-3 py-2 text-sm font-medium rounded-md ${
-                pagination.hasPrev
-                  ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              className={`px-3 py-2 rounded-md text-sm ${
+                pagination.hasPrev ? 'bg-gray-200 hover:bg-gray-300 text-gray-700' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
               }`}
             >
               Previous
             </button>
-            
-            <div className="flex items-center space-x-1">
-              {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                const pageNum = i + 1;
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
-                    className={`px-3 py-2 text-sm font-medium rounded-md ${
-                      pageNum === pagination.page
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-            </div>
-            
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={!pagination.hasNext}
-              className={`px-3 py-2 text-sm font-medium rounded-md ${
-                pagination.hasNext
-                  ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              className={`px-3 py-2 rounded-md text-sm ${
+                pagination.hasNext ? 'bg-gray-200 hover:bg-gray-300 text-gray-700' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
               }`}
             >
               Next
@@ -232,4 +141,4 @@ const ImportLogsTable: React.FC = () => {
   );
 };
 
-export default ImportLogsTable; 
+export default ImportLogsTable;
