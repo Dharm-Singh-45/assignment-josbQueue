@@ -6,6 +6,7 @@ import { fetchAndStoreJobs } from './utils/jobFetcher.js';
 import './queues/jobProcessor.js'; 
 
 import dotenv from 'dotenv';
+import scheduleFetchJobs from './utils/cronScheduler.js';
 
 dotenv.config({ path: './config.env' })
 
@@ -50,6 +51,7 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`🚀 Server started on port ${PORT}`);
     });
+    await scheduleFetchJobs(); 
   } catch (error) {
     console.error('❌ Failed to start server:', error);
     process.exit(1);
