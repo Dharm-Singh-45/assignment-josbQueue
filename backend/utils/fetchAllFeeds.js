@@ -1,7 +1,6 @@
 import ImportLog from "../models/ImportLog.js";
 import { fetchAndStoreJobs } from "./jobFetcher.js";
 
-
 const jobFeedURLs = [
   'https://jobicy.com/?feed=job_feed',
   'https://jobicy.com/?feed=job_feed&job_categories=smm&job_types=full-time',
@@ -29,12 +28,9 @@ const fetchAllFeeds = async () => {
       if (result.failedJobs?.length) {
         failedJobs.push(...result.failedJobs);
       }
-    } else {
-      console.error(`⚠️ Skipping stats for failed feed: ${url}`);
     }
   }
 
-  // ✅ Save a single ImportLog entry
   await ImportLog.create({
     totalFetched,
     totalImported: newJobs + updatedJobs,
@@ -43,7 +39,7 @@ const fetchAllFeeds = async () => {
     failedJobs,
   });
 
-  console.log(`📄 ✅ Combined ImportLog saved`);
+  console.log(" Combined ImportLog saved.");
 };
 
 export { fetchAllFeeds };

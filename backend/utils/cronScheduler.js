@@ -2,7 +2,6 @@ import jobQueue from "../queues/jobQueue.js";
 
 const scheduleFetchJobs = async () => {
   const repeatableJobs = await jobQueue.getRepeatableJobs();
-
   const alreadyScheduled = repeatableJobs.find(job => job.id === 'fetch-jobs-cron');
 
   if (alreadyScheduled) {

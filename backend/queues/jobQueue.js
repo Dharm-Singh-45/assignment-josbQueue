@@ -1,8 +1,7 @@
 import Queue from 'bull';
 import dotenv from 'dotenv';
-dotenv.config({ path: './config.env' })
+dotenv.config({ path: './config.env' });
 
-// Alternative Redis configuration for Redis Cloud
 const redisConfig = {
   host: process.env.REDIS_HOST,
   port: parseInt(process.env.REDIS_PORT),

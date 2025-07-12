@@ -2,45 +2,30 @@ import jobQueue from './jobQueue.js';
 import { fetchAndStoreJobs } from '../utils/jobFetcher.js';
 import { fetchAllFeeds } from '../utils/fetchAllFeeds.js';
 
-// Process different types of jobs
+// Process individual job fetch
 jobQueue.process('fetch-jobs', async (job) => {
-  console.log('🔄 Processing fetch-jobs:', job.data);
-  
   try {
     const { category } = job.data;
     const result = await fetchAndStoreJobs(category);
-    
-    console.log('✅ Job fetch completed:', result);
     return result;
   } catch (error) {
-    console.error('❌ Job fetch failed:', error.message);
     throw error;
   }
 });
 
+// Process all job feeds
 jobQueue.process('fetch-all-jobs', async (job) => {
-  console.log('🔄 Processing fetch-all-jobs:', job.data);
-  
   try {
-    // const result = await fetchAndStoreJobs();
     const result = await fetchAllFeeds();
-    
-    console.log('✅ All jobs fetch completed:', result);
     return result;
   } catch (error) {
-    console.error('❌ All jobs fetch failed:', error.message);
     throw error;
   }
 });
 
-// Generic job processor for other tasks
+// Generic job handler
 jobQueue.process('generic', async (job) => {
-  console.log('🔄 Processing generic job:', job.data);
-  
-  // Example: simulate work
   await new Promise((resolve) => setTimeout(resolve, 1000));
-  
-  console.log('✅ Generic job completed!');
   return { status: 'completed', data: job.data };
 });
 
