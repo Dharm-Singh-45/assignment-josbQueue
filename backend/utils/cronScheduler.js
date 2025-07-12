@@ -14,7 +14,7 @@ const scheduleFetchJobs = async () => {
     {},
     {
       jobId: 'fetch-jobs-cron',
-      repeat: { cron: '*/5 * * * *' },
+      repeat: { cron: '0 * * * *' },
       removeOnComplete: true,
       removeOnFail: true
     }
