@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import connectDB from './connectDb.js';
 import { fetchAndStoreJobs } from './utils/jobFetcher.js';
+
+import './queues/jobProcessor.js'; 
+
 import dotenv from 'dotenv';
 
 dotenv.config({ path: './config.env' })
@@ -33,6 +36,7 @@ app.get('/api/fetch-jobs', async (req, res) => {
     });
   }
 });
+
 
 
 
