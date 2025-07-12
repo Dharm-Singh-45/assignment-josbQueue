@@ -1,5 +1,6 @@
 import jobQueue from './jobQueue.js';
 import { fetchAndStoreJobs } from '../utils/jobFetcher.js';
+import { fetchAllFeeds } from '../utils/fetchAllFeeds.js';
 
 // Process different types of jobs
 jobQueue.process('fetch-jobs', async (job) => {
@@ -21,7 +22,8 @@ jobQueue.process('fetch-all-jobs', async (job) => {
   console.log('🔄 Processing fetch-all-jobs:', job.data);
   
   try {
-    const result = await fetchAndStoreJobs();
+    // const result = await fetchAndStoreJobs();
+    const result = await fetchAllFeeds();
     
     console.log('✅ All jobs fetch completed:', result);
     return result;

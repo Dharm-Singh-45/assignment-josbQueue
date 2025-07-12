@@ -39,15 +39,20 @@ const transformJobData = (item) => {
 };
 
 // ✅ Fetch XML from Jobicy
-const fetchJobsFromAPI = async () => {
-  const url = "https://jobicy.com/?feed=job_feed";
-  console.log(`📡 Fetching jobs from: ${url}`);
-  const response = await axios.get(url, { timeout: 30000 });
+// const fetchJobsFromAPI = async () => {
+//   const url = "https://jobicy.com/?feed=job_feed";
+//   console.log(`📡 Fetching jobs from: ${url}`);
+//   const response = await axios.get(url, { timeout: 30000 });
+//   return response.data;
+// };
+const fetchJobsFromAPI = async (feedUrl) => {
+  console.log(`📡 Fetching jobs from: ${feedUrl}`);
+  const response = await axios.get(feedUrl, { timeout: 30000 });
   return response.data;
 };
 
 // ✅ Process and insert into MongoDB
-const processAndStoreJobs = async (jsonData) => {
+const processAndStoreJobs = async (jsonData,feedUrl) => {
   const items = jsonData.rss?.channel?.item;
   const itemsArray = Array.isArray(items) ? items : [items];
 
@@ -56,7 +61,7 @@ const processAndStoreJobs = async (jsonData) => {
     return { processed: 0, created: 0, updated: 0 };
   }
 
-  console.log(`📊 Processing ${itemsArray.length} jobs...`);
+  console.log(`📊 Processing ${itemsArray.length} jobs from ${feedUrl}`);
 
   let created = 0,
     updated = 0,
@@ -112,17 +117,18 @@ const processAndStoreJobs = async (jsonData) => {
 };
 
 // ✅ Entry function
-const fetchAndStoreJobs = async () => {
+const fetchAndStoreJobs = async (feedUrl) => {
   try {
-    console.log(`🚀 Starting job fetch process...`);
-    const xmlData = await fetchJobsFromAPI();
+    console.log(`🚀 Starting job fetch process from: ${feedUrl}`);
+    const xmlData = await fetchJobsFromAPI(feedUrl);
     const jsonData = await parseXMLToJSON(xmlData);
-    const result = await processAndStoreJobs(jsonData);
-    console.log(`🎉 Job fetch process completed!`);
+    const result = await processAndStoreJobs(jsonData,feedUrl);
+    console.log(`🎉 Job fetch completed from: ${feedUrl}`);
+
     return result;
   } catch (err) {
-    console.error("❌ Error in fetchAndStoreJobs:", err.message);
-    throw err;
+    console.error(`❌ Error fetching jobs from ${feedUrl}:`, err.message);
+    return { error: err.message };
   }
 };
 
