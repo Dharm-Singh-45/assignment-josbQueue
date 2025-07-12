@@ -31,11 +31,11 @@ jobQueue.process('generic', async (job) => {
 
 // Error handling for failed jobs
 jobQueue.on('failed', (job, err) => {
-  console.error(`❌ Job ${job.id} failed:`, err.message);
+  console.error(` Job ${job.id} failed:`, err.message);
 });
 
 jobQueue.on('completed', (job, result) => {
-  console.log(`✅ Job ${job.id} completed successfully:`, result);
+  console.log(` Job ${job.id} completed successfully:`, result);
 });
 
 console.log('🚀 Job processor started and listening for jobs...'); 

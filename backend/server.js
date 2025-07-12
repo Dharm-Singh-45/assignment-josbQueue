@@ -31,10 +31,10 @@ app.use('/api',LogsRouter)
 // Start server
 const startServer = async () => {
   try {
-    // Connect to MongoDB
+    
     await connectDB();
     
-    // Start Express server
+ 
     app.listen(PORT, () => {
       console.log(`Server started on port ${PORT}`);
     });

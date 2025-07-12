@@ -7,8 +7,7 @@ const parseXMLToJSON = async (xmlData) => {
   const parser = new xml2js.Parser({
     explicitArray: false,
     ignoreAttrs: false,
-    tagNameProcessors: [xml2js.processors.stripPrefix], // ✅ key fix
-  });
+    tagNameProcessors: [xml2js.processors.stripPrefix], 
   return await parser.parseStringPromise(xmlData);
 };
 
@@ -37,13 +36,7 @@ const transformJobData = (item) => {
   return jobData;
 };
 
-// ✅ Fetch XML from Jobicy
-// const fetchJobsFromAPI = async () => {
-//   const url = "https://jobicy.com/?feed=job_feed";
-//   console.log(`📡 Fetching jobs from: ${url}`);
-//   const response = await axios.get(url, { timeout: 30000 });
-//   return response.data;
-// };
+
 const fetchJobsFromAPI = async (feedUrl) => {
   const response = await axios.get(feedUrl, { timeout: 30000 });
   return response.data;

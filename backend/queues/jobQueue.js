@@ -10,17 +10,17 @@ const redisConfig = {
 
 // For Redis Cloud, try without TLS first
 if (process.env.REDIS_HOST && process.env.REDIS_HOST.includes('redis-cloud')) {
-  // Try without TLS for Redis Cloud
-  console.log('🔧 Using Redis Cloud configuration without TLS');
+
+  console.log(' Using Redis Cloud configuration without TLS');
 } else if (process.env.REDIS_HOST && process.env.REDIS_HOST.includes('redis')) {
-  // For other cloud Redis services
+  
   redisConfig.tls = {
     rejectUnauthorized: false,
     servername: process.env.REDIS_HOST
   };
-  console.log('🔧 Using Redis Cloud configuration with TLS');
+  console.log('Using Redis Cloud configuration with TLS');
 } else {
-  console.log('🔧 Using local Redis configuration');
+  console.log(' Using local Redis configuration');
 }
 
 const jobQueue = new Queue('job-queue', {
@@ -28,11 +28,11 @@ const jobQueue = new Queue('job-queue', {
 });
 
 jobQueue.on('ready', () => {
-  console.log('✅ Redis connection established (Bull queue is ready)');
+  console.log(' Redis connection established (Bull queue is ready)');
 });
 
 jobQueue.on('error', (err) => {
-  console.error('❌ Redis connection error:', err);
+  console.error(' Redis connection error:', err);
 });
 
 export default jobQueue;
